@@ -1,3 +1,5 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
 const form = document.getElementById("loginForm") as HTMLFormElement;
 
 form.addEventListener("submit", async (e: Event) => {
@@ -6,7 +8,7 @@ form.addEventListener("submit", async (e: Event) => {
   const password = (document.getElementById("password") as HTMLInputElement)
     .value;
   try {
-    const response = await fetch("http://localhost:3000/api/login", {
+    const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
