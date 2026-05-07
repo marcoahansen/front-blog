@@ -1,4 +1,4 @@
-import { createIcons, Trash2 } from "lucide";
+import { createIcons, Trash2, LogOut } from "lucide";
 
 interface User {
   id: number;
@@ -22,24 +22,42 @@ enum UserRole {
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const token = localStorage.getItem("@token");
-const userStorage = JSON.parse(localStorage.getItem("@user"));
-const user = userStorage ? userStorage : null;
+const getAuthData = () => {
+  const token = localStorage.getItem("@token");
+  const userStorage = JSON.parse(localStorage.getItem("@user"));
+  const user = userStorage ? userStorage : null;
+  return { token, user };
+};
 
 const navArea = document.getElementById("nav-area")!;
 const postContainer = document.getElementById("post-container")!;
 
 const setupHeader = () => {
+  const { token, user } = getAuthData();
   if (token && user) {
     navArea.innerHTML = /*html*/ `
-    <span class="mr-4 text-gray-600">Olá, <strong>${user.name}</strong></span>
-    <button id="btnLogout" class="text-red-500 hover:text-red-600 hover:underline font-bold">Sair</button>
+    <div class="flex items-center gap-4">
+      <span class="text-gray-600">Olá, <strong>${user.name}</strong></span>
+      <button id="btnLogout" class="p-2 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-all">
+        <i data-lucide="log-out" class="w-5 h-5"></i>
+      </button>
+    </div>
     `;
+    const btnLogout = document.getElementById("btnLogout");
+    btnLogout.addEventListener("click", handleLogout);
   } else {
     navArea.innerHTML = /*html*/ `
     <a href="/login.html" class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded">Login</a>
     `;
   }
+};
+
+const handleLogout = () => {
+  localStorage.removeItem("@token");
+  localStorage.removeItem("@user");
+
+  setupHeader();
+  fetchPosts();
 };
 
 const fetchPosts = async () => {
@@ -55,6 +73,7 @@ const fetchPosts = async () => {
 };
 
 const renderPosts = (posts: Post[]) => {
+  const { user } = getAuthData();
   postContainer.innerHTML = "";
   posts.forEach((post) => {
     const card = document.createElement("div");
@@ -84,12 +103,14 @@ const renderPosts = (posts: Post[]) => {
     createIcons({
       icons: {
         Trash2,
+        LogOut,
       },
     });
   });
 };
 
 const deletePost = async (id: number) => {
+  const { token } = getAuthData();
   if (!confirm("Deseja realmente apagar este post?")) return;
 
   try {
