@@ -5,7 +5,7 @@ interface User {
   firstName: string;
   lastName: string;
   email: string;
-  role: string;
+  role: UserRole;
   phone: string;
 }
 interface Post {
