@@ -58,6 +58,7 @@ const handleLogout = () => {
 
   setupHeader();
   fetchPosts();
+  renderNewPostButton();
 };
 
 const fetchPosts = async () => {
@@ -69,6 +70,18 @@ const fetchPosts = async () => {
     postContainer.innerHTML = /*html*/ `
     <p class="text-red-500">Erro ao carregar posts</p>
     `;
+  }
+};
+
+const renderNewPostButton = () => {
+  const { user } = getAuthData();
+  const newPostContainer = document.getElementById("btn-container");
+  if (user) {
+    newPostContainer.innerHTML = /*html*/ `
+    <a class="bg-blue-900 hover:bg-blue-800 text-white px-4 py-2 rounded" href="novo-post.html">Novo post</a>
+    `;
+  } else {
+    newPostContainer.innerHTML = "";
   }
 };
 
@@ -135,3 +148,4 @@ const deletePost = async (id: number) => {
 
 setupHeader();
 fetchPosts();
+renderNewPostButton();
